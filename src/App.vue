@@ -21,13 +21,36 @@ export default {
             old_x: "",
             old_y: "",
             isDraw: false,
-            videoList: "",
             working: false,
         }
     },
     computed: {
         tool: function () {
             return document.querySelector("#root")
+        },
+        videoList: {
+            get() {
+                return GM_getValue("video-list")
+            },
+            set(value) {
+                GM_setValue("video-list", value)
+            }
+        },
+        working: {
+            get() {
+                return GM_getValue("wroking")
+            },
+            set(value) {
+                GM_setValue("working", value)
+            }
+        },
+        flagListSting: {
+            get() {
+                GM_getValue("flag-list-string")
+            },
+            set(value) {
+                GM_setValue("flag-list-string", value)
+            }
         }
     },
     methods: {
@@ -83,29 +106,19 @@ export default {
             console.log("up");
             this.isDraw = false;
         },
-        saveWorkingState: function () {
-            GM_setValue("video-list", this.videoList)
-            GM_setValue("working", this.working)
-        },
-        loadWorkingState: function () {
-            this.videoList = GM_getValue("video-list")
-            this.working = GM_getValue("working")
-        },
         onFlagButtonClick: function () {
             console.log("flag");
             let list = document.querySelectorAll("table.videotextlist tbody tr")
             if (list !== null) {
 
                 this.working = true
-                this.saveWorkingState()
 
                 for (let index = 1; index < list.length; index++) {
                     const element = list[index];
                     let input = element.querySelector("input")
                     let title = element.querySelector("a")
                     let code = title.innerText.split(" ")[0]
-                    let flagListSting = GM_getValue("flag-list-string")
-                    if (flagListSting !== undefined) {
+                    if (this.flagListSting !== undefined) {
                         if (flagListSting.trim().split(" ").indexOf(code) !== -1) {
                             continue;
                         }
@@ -118,21 +131,14 @@ export default {
                 }
 
                 this.working = false
-                this.saveWorkingState()
-                console.log(GM_getValue("flag-list-string"));
+                console.log(this.flagListSting);
             }
         },
         onClearButtonClick: function () {
-            GM_setValue("flag-list-string", "")
-        }
-    },
-    watch: {
-        videoList: function (newVal, oldVal) {
-            GM_setValue("video-list", this.videoList)
+            this.flagListSting = ""
         }
     },
     mounted: function () {
-        this.loadWorkingState()
         console.log(`working=${this.working}`);
         console.log(`videoList=${this.videoList}`);
 
@@ -140,9 +146,9 @@ export default {
         if (element !== null) {
             console.log("is video detail page");
 
-            // if (this.working !== true) {
-            //     return
-            // }
+            if (this.working !== true) {
+                return
+            }
 
             let type = document.querySelector("#owned")
             let buttons = type.querySelectorAll("button")
@@ -166,9 +172,9 @@ export default {
             window.history.back()
         } else {
             console.log("is wanted video page");
-            // if (this.working !== true) {
-            //     return
-            // }
+            if (this.working !== true) {
+                return
+            }
             this.onCheckButtonClick()
             this.onFlagButtonClick()
         }
