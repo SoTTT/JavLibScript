@@ -1,7 +1,6 @@
 
 // const VueLoaderPlugin = require('vue-loader-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 module.exports = {
     mode: 'development',
@@ -29,8 +28,5 @@ module.exports = {
     plugins: [
         new VueLoaderPlugin(),
         new CleanWebpackPlugin(),
-        new HtmlWebpackPlugin({
-            template: './src/index.html'
-        })
     ]
 }
